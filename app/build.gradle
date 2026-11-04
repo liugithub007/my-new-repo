@@ -1,0 +1,54 @@
+plugins {
+    id 'com.android.application'
+}
+
+// 版本号统一写在仓库根目录的 version.properties 里，每次发新版把两个数字都加一点
+def versionProps = new Properties()
+rootProject.file('version.properties').withInputStream { versionProps.load(it) }
+
+// 签名：优先用 GitHub Actions 的密钥（环境变量），本地构建时用 signing/ 目录里的文件
+def signingProps = new Properties()
+def signingFile = rootProject.file('signing/signing.properties')
+if (signingFile.exists()) signingFile.withInputStream { signingProps.load(it) }
+def ksPath = System.getenv('SHICI_KEYSTORE') ?: 'signing/shici-release.jks'
+def ksPass = System.getenv('SHICI_KEYSTORE_PASSWORD') ?: signingProps.getProperty('storePassword', '')
+def ksAlias = System.getenv('SHICI_KEY_ALIAS') ?: signingProps.getProperty('keyAlias', 'shici')
+
+android {
+    namespace 'com.shici.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.shici.app'
+        minSdk 24
+        targetSdk 34
+        versionCode versionProps.getProperty('versionCode') as int
+        versionName versionProps.getProperty('versionName')
+    }
+
+    signingConfigs {
+        release {
+            storeFile rootProject.file(ksPath)
+            storePassword ksPass
+            keyAlias ksAlias
+            keyPassword ksPass
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}

@@ -1,0 +1,68 @@
+name: 打包安卓 App
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+
+      - name: 准备签名密钥
+        env:
+          KS_B64: ${{ secrets.SHICI_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.SHICI_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -n "$KS_B64" ]; then
+            echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "SHICI_KEYSTORE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+            echo "SHICI_KEYSTORE_PASSWORD=$KS_PASS" >> "$GITHUB_ENV"
+          elif [ ! -f signing/shici-release.jks ]; then
+            echo "::error::缺少签名密钥：请在仓库 Settings → Secrets 里设置 SHICI_KEYSTORE_BASE64 和 SHICI_KEYSTORE_PASSWORD"
+            exit 1
+          fi
+
+      - name: 构建 APK
+        run: gradle assembleRelease --no-daemon --stacktrace
+
+      - name: 读取版本号
+        id: ver
+        run: echo "name=$(grep '^versionName=' version.properties | cut -d= -f2 | tr -d '\r')" >> "$GITHUB_OUTPUT"
+
+      - name: 整理文件
+        run: |
+          mkdir -p out
+          cp app/build/outputs/apk/release/app-release.apk "out/Shici-${{ steps.ver.outputs.name }}.apk"
+          cp app/src/main/assets/www/index.html "out/shici-content-${{ steps.ver.outputs.name }}.html"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shici-${{ steps.ver.outputs.name }}
+          path: out/
+
+      - name: 发布到 Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.ver.outputs.name }}
+          name: 拾词 ${{ steps.ver.outputs.name }}
+          make_latest: true
+          files: out/*
+          body: |
+            **手机安装**：下载 `Shici-${{ steps.ver.outputs.name }}.apk`，在手机上打开安装。已经装过旧版的直接覆盖安装，学习进度会保留。
+
+            `shici-content-${{ steps.ver.outputs.name }}.html` 是同一版本的网页文件，可以在电脑上用 Chrome 打开使用。
