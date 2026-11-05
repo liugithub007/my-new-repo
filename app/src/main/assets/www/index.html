@@ -2141,8 +2141,8 @@ function renderBackupUI(){
 }
 
 /* ---------- 账号与云同步（Supabase） ---------- */
-const SUPA_URL = '__SUPA_URL__';
-const SUPA_KEY = '__SUPA_KEY__';
+const SUPA_URL = 'https://mtbfddycnihdwyotyjwq.supabase.co';
+const SUPA_KEY = 'sb_publishable_Z2glcTsGDbd0o6ehlMc3AQ_3Qg5R6nv';
 const EMAIL_DOMAIN = 'users.shici.app';
 const cloudOn = () => /^https:\/\/[^_]+$/.test(SUPA_URL) && SUPA_KEY.length > 20 && !SUPA_KEY.startsWith('__');
 const AUTH_KEY = 'shici.auth';
@@ -2173,6 +2173,8 @@ function errText(e){
   if (/Password should|at least 6|weak_password/i.test(m)) return '密码太简单了，至少 6 位';
   if (/Email not confirmed|email_not_confirmed/i.test(m)) return '服务器还开着邮箱验证，暂时无法登录';
   if (/rate limit|too many|over_request_rate_limit/i.test(m)) return '操作太频繁，请过一会儿再试';
+  if (/email.*invalid|invalid.*email|email_address_invalid/i.test(m)) return '服务器不接受这个用户名，请换一个试试（' + m + '）';
+  if (/relation .*progress|does not exist|PGRST/i.test(m)) return '同步服务器的数据表还没建好（' + m + '）';
   if (/JWT|expired|refresh_token|invalid_grant|session_not_found/i.test(m)) return '登录已过期，请重新登录';
   return m;
 }
