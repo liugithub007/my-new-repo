@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>拾词背单词</title>
-<meta name="shici-app" content="1.3.0">
+<meta name="shici-app" content="1.4.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,500;7..72,700&display=swap">
@@ -47,7 +47,36 @@ button{cursor:pointer}
 .tabs button{border:0;background:transparent;padding:5px 13px;border-radius:7px;font-size:14px;color:var(--muted)}
 .tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
 
-main{padding-block:18px 48px}
+main{padding-block:18px calc(96px + env(safe-area-inset-bottom,0px))}
+.bnav{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+.bnav button{flex:1;max-width:180px;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted);padding:4px 0;border-radius:10px}
+.bnav button svg{width:24px;height:24px}
+.bnav button[aria-current="page"]{color:var(--accent);font-weight:600}
+.ptitle{font-family:var(--font-head);font-size:24px;margin:0;line-height:1.3}
+.subhead{display:flex;align-items:center;gap:6px;margin:-4px 0 0 -8px}
+.subhead .ptitle{font-size:20px}
+.menu{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.menu button{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border:0;border-top:1px solid var(--line);background:transparent;text-align:left}
+.menu button:first-child{border-top:0}
+.menu button:hover{background:var(--sunk)}
+.menu .mi{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--sunk);color:var(--accent);flex:none}
+.menu .mi svg{width:20px;height:20px}
+.menu .mtx{flex:1;min-width:0}
+.menu .mtx b{display:block;font-weight:600;font-size:15px}
+.menu .mtx small{display:block;color:var(--muted);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.menu .chev{color:var(--muted);font-size:20px}
+.feed{display:flex;flex-direction:column;gap:14px}
+.post{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.post .phd{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.post .phd b{font-family:var(--font-head);font-size:19px;line-height:1.3}
+.post .phd small{color:var(--muted);font-size:12px}
+.post .phd b.it{font-style:italic;font-size:21px}
+.sec{font-size:14px;color:var(--muted);font-weight:600;margin:6px 0 -4px;letter-spacing:.04em}
+.field2{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.field2 input{padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--paper);font-size:16px}
+.field2 input:focus{border-color:var(--accent);outline:none}
+.acct{display:flex;flex-direction:column;gap:12px}
+.acct .who{font-family:var(--font-head);font-size:22px;font-weight:700}
 section{display:flex;flex-direction:column;gap:16px}
 
 .today{display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
@@ -221,7 +250,7 @@ textarea{width:100%;min-height:140px;padding:10px 12px;border:1px solid var(--li
 .method .tag{font-family:var(--font-mono);font-size:11px;color:var(--accent);border:1px solid var(--accent);border-radius:4px;padding:0 5px;height:fit-content;margin-top:3px;white-space:nowrap}
 .method p{margin:0;font-size:13.5px;color:var(--muted);grid-column:2}
 
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:8px 16px;border-radius:9px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100% - 32px)}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:30;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:8px 16px;border-radius:9px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100% - 32px)}
 .toast.on{opacity:1}
 
 /* tap-to-read */
@@ -231,7 +260,7 @@ textarea{width:100%;min-height:140px;padding:10px 12px;border:1px solid var(--li
 .tk.hl{background:var(--mark);padding:0 2px;border-bottom:0}
 .tk.ph{border-bottom:1px dashed var(--line)}
 .tk.on{background:var(--accent);color:var(--accent-ink);border-bottom-color:transparent}
-.gsheet{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));width:min(560px,calc(100% - 24px));background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 48px -12px rgba(10,20,50,.45);padding:14px 16px;z-index:20;display:flex;flex-direction:column;gap:6px;max-height:55vh;overflow:auto}
+.gsheet{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(74px + env(safe-area-inset-bottom,0px));width:min(560px,calc(100% - 24px));background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 48px -12px rgba(10,20,50,.45);padding:14px 16px;z-index:20;display:flex;flex-direction:column;gap:6px;max-height:55vh;overflow:auto}
 .gsheet .ghead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font-family:var(--font-head);font-size:22px;font-weight:700}
 .gsheet .ghead .ipa{font-size:14px;font-weight:400}
 .gsheet .gzh{font-size:16px;font-weight:600}
@@ -275,13 +304,7 @@ textarea{width:100%;min-height:140px;padding:10px 12px;border:1px solid var(--li
 <header class="top">
   <div class="wrap">
     <div class="brand"><span class="logo">拾词</span><span class="sync" id="saveChip">本机保存</span></div>
-    <nav class="tabs" role="tablist" aria-label="页面">
-      <button role="tab" id="t-study" data-tab="study" aria-selected="true">学习</button>
-      <button role="tab" id="t-chains" data-tab="chains" aria-selected="false">词串</button>
-      <button role="tab" id="t-words" data-tab="words" aria-selected="false">词库</button>
-      <button role="tab" id="t-stats" data-tab="stats" aria-selected="false">统计</button>
-      <button role="tab" id="t-settings" data-tab="settings" aria-selected="false">设置</button>
-    </nav>
+    <span class="sync" id="cloudChip"></span>
   </div>
 </header>
 
@@ -292,16 +315,42 @@ textarea{width:100%;min-height:140px;padding:10px 12px;border:1px solid var(--li
     <div class="note warn" id="backlogNote" hidden></div>
     <div class="note" id="fsbNote" hidden></div>
     <div class="note warn" id="restoreNote" hidden></div>
-    <div class="unitbar" id="unitBar" hidden></div>
     <article class="card" id="card" aria-live="polite"></article>
   </section>
 
+  <section id="tab-read" hidden>
+    <div class="feed" id="readFeed"></div>
+    <div class="feed" id="readView" hidden></div>
+  </section>
+
+  <section id="tab-more" hidden>
+    <h2 class="ptitle">设置</h2>
+    <div class="menu">
+      <button data-go="account"><span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span><span class="mtx"><b>账号与同步</b><small id="menuAcct">登录后，手机 App 和网页版同步学习进度</small></span><span class="chev">›</span></button>
+      <button data-go="chains"><span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></span><span class="mtx"><b>词串</b><small id="menuChains">14 个主题词串、串联回顾和单元文章</small></span><span class="chev">›</span></button>
+      <button data-go="words"><span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4z"/><path d="M20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg></span><span class="mtx"><b>词库</b><small>查词、编辑记忆点、导入新词</small></span><span class="chev">›</span></button>
+      <button data-go="stats"><span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><span class="mtx"><b>统计</b><small>学习数据和未来 7 天的复习量</small></span><span class="chev">›</span></button>
+      <button data-go="settings"><span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><span class="mtx"><b>学习设置</b><small>每天新词、发音、备份与更新</small></span><span class="chev">›</span></button>
+    </div>
+    <div class="menu" id="menuApp" hidden>
+      <button id="getApp"><span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg></span><span class="mtx"><b>下载安卓 App</b><small>和网页版用同一个账号同步进度</small></span><span class="chev">›</span></button>
+    </div>
+    <p class="status" id="moreVer" style="margin:0"></p>
+  </section>
+
+  <section id="tab-account" hidden>
+    <div class="subhead"><button class="btn ghost sm" data-back>‹ 设置</button><h2 class="ptitle">账号与同步</h2></div>
+    <div class="box acct" id="acctBox"></div>
+  </section>
+
   <section id="tab-chains" hidden>
+    <div class="subhead"><button class="btn ghost sm" data-back>‹ 设置</button><h2 class="ptitle">词串</h2></div>
     <div class="note"><span class="grow">每个词串是一个小场景：先读故事猜词义，再逐个学单词，学完用“串联回顾”在故事里把词填回去。同义词、反义词和长得像的词被刻意分到不同的串里，避免互相干扰。</span></div>
     <div class="chains" id="chainList"></div>
   </section>
 
   <section id="tab-words" hidden>
+    <div class="subhead"><button class="btn ghost sm" data-back>‹ 设置</button><h2 class="ptitle">词库</h2></div>
     <details class="panel" id="importPanel">
       <summary><span class="ttl">导入单词</span><span class="sm">+</span></summary>
       <div class="panel-body">
@@ -339,6 +388,7 @@ textarea{width:100%;min-height:140px;padding:10px 12px;border:1px solid var(--li
   </section>
 
   <section id="tab-stats" hidden>
+    <div class="subhead"><button class="btn ghost sm" data-back>‹ 设置</button><h2 class="ptitle">统计</h2></div>
     <div class="tiles" id="tiles"></div>
     <div class="box"><h3>词汇状态</h3><div class="stack" id="stateStack"></div><div class="legend" id="stateLegend"></div></div>
     <div class="box"><h3>未来 7 天要复习的卡片</h3><div class="bars" id="forecast"></div></div>
@@ -346,6 +396,7 @@ textarea{width:100%;min-height:140px;padding:10px 12px;border:1px solid var(--li
   </section>
 
   <section id="tab-settings" hidden>
+    <div class="subhead"><button class="btn ghost sm" data-back>‹ 设置</button><h2 class="ptitle">学习设置</h2></div>
     <div class="box">
       <h3>学习节奏</h3>
       <div class="form">
@@ -404,6 +455,11 @@ textarea{width:100%;min-height:140px;padding:10px 12px;border:1px solid var(--li
     </div>
   </section>
 </main>
+<nav class="bnav" aria-label="主导航">
+  <button data-nav="study" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="6" width="13" height="14" rx="2"/><path d="M7.5 3h11a2 2 0 0 1 2 2v12"/><path d="M7 11h6M7 15h4"/></svg><span>单词</span></button>
+  <button data-nav="read"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>推文</span></button>
+  <button data-nav="more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg><span>设置</span></button>
+</nav>
 <div class="toast" id="toast" role="status"></div>
 <div class="gsheet" id="gsheet" role="dialog" aria-label="释义" hidden></div>
 
@@ -1696,7 +1752,7 @@ one person 一个人
 (() => {
 'use strict';
 const MIN = 60e3, HOUR = 36e5, DAY = 864e5, LS_KEY = 'shici.v2';
-const APP_VERSION = '1.3.0';
+const APP_VERSION = '1.4.0';
 const RELEASES_URL = 'https://github.com/liugithub007/my-new-repo/releases/latest';
 const NATIVE = (window.ShiciNative && typeof window.ShiciNative.saveBackup === 'function') ? window.ShiciNative : null;
 const PR_GAPS = [1, 2, 4, 9, 19, 45];   // 短文复习：开始学一串后第 1、3、7、16、35、80 天
@@ -1810,7 +1866,7 @@ function saveLocal(){
   const chip = document.getElementById('saveChip');
   if (chip) chip.textContent = storageOK ? '已保存在本机' : '无法保存！请导出备份';
 }
-function commit(){ state.updatedAt = Date.now(); saveLocal(); scheduleBackup(); }
+function commit(){ state.updatedAt = Date.now(); saveLocal(); scheduleBackup(); scheduleSync(); }
 try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch(e){}
 
 /* ---------- days (a day starts at 04:00) ---------- */
@@ -2084,6 +2140,191 @@ function renderBackupUI(){
   if (chip) chip.textContent = !storageOK ? '无法保存！请导出备份' : on && fsb.last ? `已保存 · 已备份 ${hhmm(fsb.last)}` : '已保存在本机';
 }
 
+/* ---------- 账号与云同步（Supabase） ---------- */
+const SUPA_URL = '__SUPA_URL__';
+const SUPA_KEY = '__SUPA_KEY__';
+const EMAIL_DOMAIN = 'users.shici.app';
+const cloudOn = () => /^https:\/\/[^_]+$/.test(SUPA_URL) && SUPA_KEY.length > 20 && !SUPA_KEY.startsWith('__');
+const AUTH_KEY = 'shici.auth';
+let auth = null;
+try { auth = JSON.parse(localStorage.getItem(AUTH_KEY) || 'null'); } catch(e){}
+const sync = {busy: false, timer: null, last: 0, err: ''};
+function saveAuth(){ try { if (auth) localStorage.setItem(AUTH_KEY, JSON.stringify(auth)); else localStorage.removeItem(AUTH_KEY); } catch(e){} }
+const unameOk = u => /^[a-z0-9_]{3,20}$/.test(u);
+const emailOf = u => u + '@' + EMAIL_DOMAIN;
+async function supa(path, opts){
+  opts = opts || {};
+  const headers = Object.assign({apikey: SUPA_KEY, 'Content-Type': 'application/json'}, opts.headers || {});
+  if (opts.auth) headers.Authorization = 'Bearer ' + auth.access_token;
+  const r = await fetch(SUPA_URL + path, {method: opts.method || 'GET', headers, body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined});
+  const txt = await r.text(); let data = null;
+  try { data = txt ? JSON.parse(txt) : null; } catch(e){ data = txt; }
+  if (!r.ok){
+    const msg = (data && (data.msg || data.message || data.error_description || data.error_code || data.error)) || ('HTTP ' + r.status);
+    const err = new Error(String(msg)); err.status = r.status; throw err;
+  }
+  return data;
+}
+function errText(e){
+  const m = (e && e.message) || String(e);
+  if (/Failed to fetch|NetworkError|Load failed|network/i.test(m)) return '连不上同步服务器，请检查网络';
+  if (/Invalid login credentials|invalid_credentials/i.test(m)) return '用户名或密码不对';
+  if (/already registered|already exists|user_already_exists/i.test(m)) return '这个用户名已经有人用了，换一个试试';
+  if (/Password should|at least 6|weak_password/i.test(m)) return '密码太简单了，至少 6 位';
+  if (/Email not confirmed|email_not_confirmed/i.test(m)) return '服务器还开着邮箱验证，暂时无法登录';
+  if (/rate limit|too many|over_request_rate_limit/i.test(m)) return '操作太频繁，请过一会儿再试';
+  if (/JWT|expired|refresh_token|invalid_grant|session_not_found/i.test(m)) return '登录已过期，请重新登录';
+  return m;
+}
+function setSession(d, username){
+  auth = {access_token: d.access_token, refresh_token: d.refresh_token, expires_at: Date.now() + (d.expires_in || 3600) * 1000, uid: d.user && d.user.id, username};
+  saveAuth();
+}
+async function ensureToken(){
+  if (!auth) throw new Error('未登录');
+  if (Date.now() < auth.expires_at - 60000) return;
+  try {
+    const d = await supa('/auth/v1/token?grant_type=refresh_token', {method: 'POST', body: {refresh_token: auth.refresh_token}});
+    setSession(d, auth.username);
+  } catch(e){
+    if (e.status === 400 || e.status === 401 || e.status === 403){ auth = null; saveAuth(); renderSyncUI(); throw new Error('登录已过期，请重新登录'); }
+    throw e;
+  }
+}
+async function signUp(u, p){
+  const d = await supa('/auth/v1/signup', {method: 'POST', body: {email: emailOf(u), password: p, data: {username: u}}});
+  if (!d || !d.access_token) throw new Error('注册成功，但服务器还开着邮箱验证，暂时无法登录');
+  setSession(d, u);
+}
+async function signIn(u, p){
+  const d = await supa('/auth/v1/token?grant_type=password', {method: 'POST', body: {email: emailOf(u), password: p}});
+  setSession(d, u);
+}
+function signOut(){
+  const a = auth; auth = null; saveAuth(); sync.last = 0; sync.err = '';
+  if (a) fetch(SUPA_URL + '/auth/v1/logout', {method: 'POST', headers: {apikey: SUPA_KEY, Authorization: 'Bearer ' + a.access_token}}).catch(() => {});
+  renderAccount(); renderSyncUI(); toast('已退出登录，本机进度仍然保留');
+}
+async function deleteAccount(){
+  try {
+    await ensureToken();
+    await supa('/rest/v1/rpc/delete_my_account', {method: 'POST', auth: true, body: {}});
+    auth = null; saveAuth(); sync.last = 0;
+    renderAccount(); renderSyncUI(); toast('账号和云端数据已删除，本机进度仍然保留');
+  } catch(e){ toast('删除失败：' + errText(e)); }
+}
+/* 合并两份进度：每张卡片取最近一次复习的那份，词串和单元取进度更靠前的，所以两台设备各学各的也不会互相覆盖。 */
+function mergeProgress(local, remote){
+  if (!remote || !Array.isArray(remote.words) || !Array.isArray(remote.groups)) return false;
+  let changed = false;
+  const newerRemote = (remote.updatedAt || 0) > (local.updatedAt || 0);
+  const gByTitle = new Map(local.groups.map(g => [g.title, g])), gid = new Map();
+  for (const rg of remote.groups){
+    let lg = gByTitle.get(rg.title);
+    if (!lg){ lg = Object.assign({}, rg, {id: mkId('g')}); local.groups.push(lg); gByTitle.set(lg.title, lg); changed = true; }
+    else {
+      const st = [lg.started, rg.started].filter(Boolean), ns = st.length ? Math.min(...st) : 0;
+      if (ns !== (lg.started || 0)){ lg.started = ns; changed = true; }
+      if ((rg.challenged || 0) > (lg.challenged || 0)){ lg.challenged = rg.challenged; changed = true; }
+      if ((rg.best || 0) > (lg.best || 0)){ lg.best = rg.best; changed = true; }
+      if (rg.pr && (!lg.pr || rg.pr.stage > lg.pr.stage || (rg.pr.stage === lg.pr.stage && (rg.pr.next || 0) > (lg.pr.next || 0)))){ lg.pr = Object.assign({}, rg.pr); changed = true; }
+      if (!lg.story && rg.story){ lg.story = rg.story; lg.storyZh = rg.storyZh; changed = true; }
+    }
+    gid.set(rg.id, lg.id);
+  }
+  const wByKey = new Map(local.words.map(w => [w.w.toLowerCase(), w]));
+  for (const rw of remote.words){
+    const key = String(rw.w || '').toLowerCase(); if (!key) continue;
+    const lw = wByKey.get(key);
+    if (!lw){ const nw = Object.assign({}, rw, {id: mkId('w'), g: gid.get(rw.g) || rw.g}); if (!nw.r) nw.r = newCard(); local.words.push(nw); wByKey.set(key, nw); changed = true; continue; }
+    for (const k of ['r', 's']){
+      const rc = rw[k], lc = lw[k];
+      if (rc && (!lc || (rc.last || 0) > (lc.last || 0))){ lw[k] = Object.assign({}, rc); changed = true; }
+    }
+    if (rw.leech && !lw.leech){ lw.leech = true; changed = true; }
+    if (rw.note && rw.note !== lw.note && (newerRemote || !lw.note)){ lw.note = rw.note; changed = true; }
+  }
+  for (const [day, rl] of Object.entries(remote.log || {})){
+    const ll = local.log[day] || (local.log[day] = {});
+    for (const [f, v] of Object.entries(rl || {})) if (typeof v === 'number' && v > (ll[f] || 0)){ ll[f] = v; changed = true; }
+  }
+  for (const [k, v] of Object.entries(remote.unitRead || {})) if (v && (!local.unitRead[k] || v < local.unitRead[k])){ local.unitRead[k] = v; changed = true; }
+  for (const [k, v] of Object.entries(remote.unitReview || {})){ const l = local.unitReview[k]; if (v && (!l || v.stage > l.stage)){ local.unitReview[k] = Object.assign({}, v); changed = true; } }
+  for (const [k, v] of Object.entries(remote.unitArticles || {})) if (!local.unitArticles[k]){ local.unitArticles[k] = v; changed = true; }
+  if (newerRemote && remote.settings){ local.settings = Object.assign({}, DEFAULT_SETTINGS, remote.settings); changed = true; }
+  local.lastExport = Math.max(local.lastExport || 0, remote.lastExport || 0);
+  local.lastSnap = Math.max(local.lastSnap || 0, remote.lastSnap || 0);
+  local.updatedAt = Math.max(local.updatedAt || 0, remote.updatedAt || 0);
+  return changed;
+}
+async function syncNow(){
+  if (!cloudOn() || !auth) return;
+  if (sync.busy){ sync.again = true; return; }
+  sync.busy = true; renderSyncUI();
+  try {
+    await ensureToken();
+    const rows = await supa('/rest/v1/progress?select=data&user_id=eq.' + encodeURIComponent(auth.uid), {auth: true});
+    const remote = rows && rows[0] && rows[0].data;
+    let changed = false;
+    if (remote) changed = mergeProgress(state, normalize(JSON.parse(JSON.stringify(remote))));
+    if (changed) saveLocal();
+    await supa('/rest/v1/progress?on_conflict=user_id', {method: 'POST', auth: true,
+      headers: {Prefer: 'resolution=merge-duplicates,return=minimal'},
+      body: {user_id: auth.uid, username: auth.username, data: state, updated_at: new Date().toISOString()}});
+    sync.last = Date.now(); sync.err = '';
+    if (changed){ if (curTab === 'study') renderToday(buildQueues()); else setTab(curTab); }
+  } catch(e){ sync.err = errText(e); }
+  finally {
+    sync.busy = false; renderSyncUI();
+    if (curTab === 'account') renderAccount();
+    if (sync.again){ sync.again = false; scheduleSync(3000); }
+  }
+}
+function scheduleSync(delay){
+  if (!cloudOn() || !auth) return;
+  clearTimeout(sync.timer); sync.timer = setTimeout(syncNow, delay == null ? 8000 : delay);
+}
+function renderSyncUI(){
+  const c = $('cloudChip'); if (!c) return;
+  c.textContent = !cloudOn() || !auth ? '' : sync.busy ? '· 同步中…' : sync.err ? '· 同步失败' : sync.last ? `· 已同步 ${hhmm(sync.last)}` : '';
+}
+async function doAuth(kind){
+  const u = $('acctUser').value.trim().toLowerCase(), p = $('acctPass').value, msg = $('acctMsg');
+  if (!unameOk(u)){ msg.textContent = '用户名用 3–20 位小写英文字母、数字或下划线'; return; }
+  if (p.length < 6){ msg.textContent = '密码至少 6 位'; return; }
+  msg.textContent = kind === 'up' ? '正在注册…' : '正在登录…';
+  $('acctLogin').disabled = $('acctSignup').disabled = true;
+  try {
+    if (kind === 'up') await signUp(u, p); else await signIn(u, p);
+    await syncNow();
+    toast(kind === 'up' ? '注册成功，进度已开始同步' : '登录成功，进度已同步');
+    renderAccount();
+  } catch(e){
+    msg.textContent = errText(e);
+    $('acctLogin').disabled = $('acctSignup').disabled = false;
+  }
+}
+function renderAccount(){
+  const box = $('acctBox'); if (!box) return;
+  if (!cloudOn()){
+    box.innerHTML = '<div class="status">云同步还在准备中。现在学习进度只保存在这台设备上，可以用「学习设置」里的导出备份和从备份恢复，在设备之间转移进度。</div>';
+    return;
+  }
+  if (!auth){
+    box.innerHTML = `<div class="status">登录后，你在手机 App 和网页版上的学习进度会自动同步。没有账号就填好用户名和密码，点“注册新账号”。</div>
+      <label class="field2">用户名<input id="acctUser" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="3–20 位小写字母、数字或下划线"></label>
+      <label class="field2">密码<input id="acctPass" type="password" autocomplete="current-password" placeholder="至少 6 位"></label>
+      <div class="row-actions"><button class="btn primary" id="acctLogin">登录</button><button class="btn" id="acctSignup">注册新账号</button></div>
+      <div class="status" id="acctMsg"></div>
+      <div class="status">我们只保存你的用户名和学习进度，密码加密存储，任何人都看不到。可以随时删除账号和全部云端数据。忘记密码暂时无法找回，请记好。</div>`;
+    return;
+  }
+  box.innerHTML = `<div><div class="status">已登录</div><div class="who">${esc(auth.username)}</div></div>
+    <div class="status">${sync.busy ? '正在同步…' : sync.err ? '上次同步失败：' + esc(sync.err) : sync.last ? '上次同步：' + new Date(sync.last).toLocaleString() : '还没有同步过'}</div>
+    <div class="status">每次答题后会自动同步。在另一台设备上用同一个用户名登录，进度会自动合并：同一个词以最近一次复习为准，不会互相覆盖。</div>
+    <div class="row-actions"><button class="btn primary" id="acctSync">立即同步</button><button class="btn" id="acctLogout">退出登录</button><button class="btn danger" id="acctDelete">删除账号和云端数据</button></div>`;
+}
+
 const groupById = id => state.groups.find(g => g.id === id);
 const groupIndex = id => state.groups.findIndex(g => g.id === id);
 const wordsOf = gid => state.words.filter(w => w.g === gid);
@@ -2198,17 +2439,6 @@ function renderToday(q){
   if (q.backlog) bn.textContent = `待复习有 ${q.R.length} 张，今天先不开新串，把旧词复习完。可以在「设置」里关掉这个规则。`;
   const reviewed = Object.values(state.log).reduce((a,l) => a + (l.rev||0), 0);
   $('backupNote').hidden = !(reviewed >= 30 && !(fsb.handle && fsb.perm === 'granted') && Date.now() - (state.lastExport || state.created || 0) > 7*DAY);
-  const ub = $('unitBar'), nu = q.units.find(u => !u.unlocked);
-  if (nu && nu.words.length){
-    const left = nu.words.length - nu.learned, pct = Math.round(nu.learned / nu.words.length * 100);
-    ub.hidden = false;
-    ub.innerHTML = nu.paras
-      ? `<div class="ut"><small>第 ${nu.num} 单元奖励文章</small><b>${esc(nu.title)}</b><small>${esc(nu.titleZh)}</small></div>
-         <div class="hook">${esc(nu.hook)}</div>
-         <div class="ubar"><i style="width:${pct}%"></i></div>
-         <div class="status">已学 ${nu.learned} / ${nu.words.length} 个词，再学 <b>${left}</b> 个词解锁全文</div>`
-      : `<div class="ut"><small>第 ${nu.num} 单元</small><b>${nu.complete ? '' : '（还没凑满 50 词）'}</b></div><div class="ubar"><i style="width:${pct}%"></i></div><div class="status">已学 ${nu.learned} / ${nu.words.length} 个词</div>`;
-  } else ub.hidden = true;
 }
 
 function showNext(){
@@ -2771,18 +3001,99 @@ function twoStep(btn, label, action){
 }
 
 /* ---------- tabs ---------- */
+const TABS = ['study','read','more','chains','words','stats','settings','account'];
+const SUBPAGES = ['chains','words','stats','settings','account'];
+let curTab = 'study';
 function setTab(t){
-  document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
-  for (const n of ['study','chains','words','stats','settings']) $('tab-' + n).hidden = n !== t;
-  if (t === 'study') showNext(); if (t === 'chains') renderChains(); if (t === 'words') renderList();
-  if (t === 'stats') renderStats(); if (t === 'settings') renderSettings();
+  if (!TABS.includes(t)) t = 'study';
+  curTab = t;
+  for (const n of TABS) $('tab-' + n).hidden = n !== t;
+  const nav = t === 'study' ? 'study' : t === 'read' ? 'read' : 'more';
+  document.querySelectorAll('.bnav button').forEach(b => { if (b.dataset.nav === nav) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+  hideGloss();
+  if (t === 'study') showNext(); if (t === 'read') renderRead(); if (t === 'more') renderMore();
+  if (t === 'chains') renderChains(); if (t === 'words') renderList();
+  if (t === 'stats') renderStats(); if (t === 'settings') renderSettings(); if (t === 'account') renderAccount();
   try { sessionStorage.setItem('shici.tab', t); } catch(e){}
   window.scrollTo(0, 0);
 }
-const currentTab = () => document.querySelector('.tabs button[aria-selected="true"]').dataset.tab;
+const currentTab = () => curTab;
+function renderMore(){
+  $('menuApp').hidden = !!NATIVE;
+  $('moreVer').textContent = (NATIVE ? '拾词 App' : '拾词网页版') + ' · 内容版本 ' + APP_VERSION;
+  $('menuAcct').textContent = !cloudOn() ? '云同步即将开放，目前进度只保存在本机' : auth ? `已登录：${auth.username}` + (sync.last ? ` · 上次同步 ${hhmm(sync.last)}` : '') : '登录后，手机 App 和网页版同步学习进度';
+  const started = state.groups.filter(g => g.started).length;
+  $('menuChains').textContent = `已开始 ${started} / ${state.groups.length} 串 · 串联回顾和单元文章`;
+}
+
+/* ---------- 推文：单元文章 + 词串故事 ---------- */
+function renderRead(){
+  $('readView').hidden = true; $('readFeed').hidden = false;
+  const units = computeUnits().filter(u => u.paras);
+  let h = '<h2 class="ptitle">推文</h2><div class="status">每学完一个单元解锁一篇奖励文章；学过的词串故事也都在这里。任何单词、词组都能点。</div>';
+  if (units.length) h += '<h3 class="sec">单元奖励文章</h3>';
+  for (const u of units){
+    const pct = u.words.length ? Math.round(u.learned / u.words.length * 100) : 0, left = u.words.length - u.learned;
+    if (u.unlocked){
+      h += `<article class="post"><div class="phd"><span><small>第 ${u.num} 单元 · ${u.words.length} 个词</small><br><b class="it">${esc(u.title)}</b></span><span class="chip done">已解锁</span></div>
+        <div class="status">${esc(u.titleZh)}　${esc(u.hook)}</div>
+        <div><button class="btn primary sm" data-read-unit="${u.key}">阅读全文</button></div></article>`;
+    } else {
+      h += `<article class="post"><div class="phd"><span><small>第 ${u.num} 单元 · 未解锁</small><br><b class="it">${esc(u.title)}</b></span><span class="chip">${u.learned}/${u.words.length}</span></div>
+        <div class="status">${esc(u.titleZh)}　${esc(u.hook)}</div>
+        <div class="teaser story">${readerHTML(u.paras[0], null)}</div>
+        <div class="ubar"><i style="width:${pct}%"></i></div>
+        <div class="status">再学 <b>${left}</b> 个词解锁全文</div></article>`;
+    }
+  }
+  const gs = state.groups.filter(g => g.started && g.story).sort((a,b) => b.started - a.started);
+  h += '<h3 class="sec">词串故事</h3>';
+  if (!gs.length) h += '<div class="empty">开始学第一串单词后，它的故事会出现在这里。</div>';
+  for (const g of gs){
+    const ws = wordsOf(g.id);
+    h += `<article class="post"><div class="phd"><b>${esc(g.title)}</b><small>${ws.length} 个词</small></div>
+      <div class="story">${readerHTML(storyPairs(g), new Set(ws.map(w => w.id)))}</div>
+      <div class="ptools"><button class="btn sm" data-gread="${g.id}">${SPK.replace('<svg','<svg width="14" height="14"')} 朗读</button><button class="btn ghost sm" data-gzh>中文</button></div>
+      <div class="storyzh" hidden>${esc(g.storyZh)}</div></article>`;
+  }
+  $('readFeed').innerHTML = h;
+}
+function openReadArticle(u){
+  markUnitRead(u.key); commit();
+  sess.article = u; sess.articleReview = false;
+  const hl = new Set(u.words.map(w => w.id));
+  let h = `<div><button class="btn ghost sm" id="readBack">‹ 推文</button></div>
+    <article class="post"><div class="kind">第 ${u.num} 单元文章 <span class="chip done">本单元 ${u.words.length} 个词已高亮</span></div>
+    <h2 class="atitle">${esc(u.title)}</h2>
+    <div class="prompt">${esc(u.titleZh)}　·　点任何单词看释义、听发音、看整句翻译</div>`;
+  u.paras.forEach((p, i) => {
+    h += `<div class="para"><p class="story">${readerHTML(p, hl)}</p>
+      <div class="ptools"><button class="btn sm" data-rread="${i}">${SPK.replace('<svg','<svg width="14" height="14"')} 朗读本段</button><button class="btn ghost sm" data-gzh>中文</button></div>
+      <div class="storyzh" hidden>${p.map(x => esc(x[1])).join('')}</div></div>`;
+  });
+  h += '</article>';
+  $('readFeed').hidden = true; $('readView').hidden = false; $('readView').innerHTML = h;
+  window.scrollTo(0, 0);
+}
 
 /* ---------- events ---------- */
-document.querySelector('.tabs').addEventListener('click', e => { const b = e.target.closest('button[data-tab]'); if (b) setTab(b.dataset.tab); });
+document.querySelector('.bnav').addEventListener('click', e => { const b = e.target.closest('button[data-nav]'); if (b) setTab(b.dataset.nav); });
+document.querySelector('main').addEventListener('click', e => {
+  const t = e.target;
+  const go = t.closest('[data-go]'); if (go){ setTab(go.dataset.go); return; }
+  if (t.closest('[data-back]')){ setTab('more'); return; }
+  if (t.closest('#getApp')){ window.open(RELEASES_URL, '_blank', 'noopener'); return; }
+  const ru = t.closest('[data-read-unit]'); if (ru){ const u = unitByKey(ru.dataset.readUnit); if (u) openReadArticle(u); return; }
+  if (t.closest('#readBack')){ renderRead(); window.scrollTo(0, 0); return; }
+  const gr = t.closest('[data-gread]'); if (gr){ const g = groupById(gr.dataset.gread); if (g) speak(g.story); return; }
+  const rr = t.closest('[data-rread]'); if (rr){ speak(sess.article.paras[+rr.dataset.rread].map(x => x[0]).join(' ')); return; }
+  const gz = t.closest('[data-gzh]'); if (gz){ const z = gz.parentElement.nextElementSibling; z.hidden = !z.hidden; gz.textContent = z.hidden ? '中文' : '收起中文'; return; }
+  if (t.closest('#acctLogin')){ doAuth('in'); return; }
+  if (t.closest('#acctSignup')){ doAuth('up'); return; }
+  if (t.closest('#acctSync')){ syncNow().then(() => toast(sync.err ? '同步失败：' + sync.err : '已同步')); return; }
+  if (t.closest('#acctLogout')){ signOut(); return; }
+  const del = t.closest('#acctDelete'); if (del){ twoStep(del, '删除账号和云端数据', deleteAccount); return; }
+});
 
 $('card').addEventListener('click', e => {
   const t = e.target;
@@ -2942,16 +3253,23 @@ document.addEventListener('click', e => {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') hideGloss(); });
 window.__shiciBack = () => {
   if (!$('gsheet').hidden){ hideGloss(); return true; }
-  if (currentTab() !== 'study'){ setTab('study'); return true; }
+  if (curTab === 'read' && !$('readView').hidden){ renderRead(); return true; }
+  if (SUBPAGES.includes(curTab)){ setTab('more'); return true; }
+  if (curTab !== 'study'){ setTab('study'); return true; }
   return false;
 };
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden'){ saveLocal(); if (NATIVE) nativeBackup(); } });
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden'){ saveLocal(); if (NATIVE) nativeBackup(); if (auth) syncNow(); }
+  else if (auth) syncNow();
+});
 
 /* ---------- boot ---------- */
 saveLocal();
 let startTab = 'study'; try { startTab = sessionStorage.getItem('shici.tab') || 'study'; } catch(e){}
 setTab(startTab);
 fsbInit();
+renderSyncUI();
+if (auth) syncNow();
 })();
 </script>
 </body>
