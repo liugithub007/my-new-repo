@@ -55,8 +55,10 @@ export function bookWords(bookId) {
   if (bookCache.has(bookId)) return bookCache.get(bookId);
   const bit = BIT[bookId] || 0, b = bookById(bookId), baseBit = (b.base || []).reduce((m, t) => m | (BIT[t] || 0), 0);
   const all = D.words.filter(a => (a[4] & bit) && /^[a-z]/.test(a[0]));   // 去掉人名、地名、缩写
-  const fresh = all.filter(a => !(a[4] & baseBit)).map(a => a[0]);
-  const basic = all.filter(a => a[4] & baseBit).map(a => a[0]);
+  // 词典的考试标签不全（如 best、center 没标中考），所以最常用的 1500 词也算基础词
+  const isBasic = a => baseBit && ((a[4] & baseBit) || a[3] <= 1500);
+  const fresh = all.filter(a => !isBasic(a)).map(a => a[0]);
+  const basic = all.filter(isBasic).map(a => a[0]);
   const out = { order: fresh.concat(basic), byRank: all.map(a => a[0]), freshCount: fresh.length, total: all.length };
   bookCache.set(bookId, out);
   return out;

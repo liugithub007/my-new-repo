@@ -1,38 +1,41 @@
-# 拾词背单词（安卓 App + 电脑网页版）
+# 拾词 · 科学背单词
 
-一个基于记忆科学的背单词工具：FSRS 间隔复习、主题词串、全文点读、单元奖励文章、短文复习。
+每天一点，不欠单词债。安卓 App + 网页版，同一个账号进度自动同步。
 
-## 网页版
+- **网页版**：https://liugithub007.github.io/my-new-repo/
+- **安卓 App**：在 [Releases](https://github.com/liugithub007/my-new-repo/releases/latest) 下载最新的 `Shici-x.y.z.apk`，覆盖安装不丢进度
 
-电脑或手机浏览器打开 https://liugithub007.github.io/my-new-repo/ 即可使用。注册一个账号（用户名 + 密码），网页版和安卓 App 的学习进度会自动同步。
+## 主要功能
 
-## 下载安装
+- **8 本词书**：中考、高考、四级、六级、考研、雅思、托福、GRE。每本先学本级新增的词（按词频），和低一级重叠的基础词放最后；同一个词在不同词书里只学一次。
+- **不欠单词债的计划**：设定每天的分钟数，按你的答题速度算出每天能完成多少张卡、长期可持续学多少新词。复习多的日子自动少给新词，积压时暂停新词并把复习分摊到后几天。
+- **FSRS 记忆算法**：在快要忘的时候安排复习；复习日期在允许范围内错开，避免某一天扎堆。
+- **熟词直接跳过**：词汇量测试（含编造词防瞎点）、新词先问“认识吗”、熟词快筛。
+- **记忆法**：构词拆解（前缀/后缀 + 词根）、谐音、联想，以及自己写的记忆点；顽固词会提示。
+- **推文**：故事和长文，全文每个词、词组都能点读，看释义、听发音、看整句翻译，学过的词会高亮。
+- **账号同步**：用户名 + 密码登录，手机和电脑合并进度（同一个词以最近一次复习为准）。
+- 拼写练习、听音模式、深色模式、每日提醒（App）、学习统计、导出导入备份。
 
-到本仓库的 **Releases** 页面下载最新的 `Shici-版本号.apk`，在安卓手机上打开安装（首次需要允许“安装未知来源应用”）。
-已经装过旧版的，直接覆盖安装新版，**学习进度会保留**。
-
-`shici-content-版本号.html` 是同一版本的网页文件，在电脑上用 Chrome 打开即可使用。
-
-## 仓库结构
+## 目录
 
 | 位置 | 内容 |
-|---|---|
-| `app/src/main/assets/www/index.html` | 全部功能和词库（App 和电脑网页版共用这一个文件） |
-| `app/src/main/java/com/shici/app/MainActivity.java` | 安卓外壳：运行网页、系统朗读、自动备份、安装更新包 |
-| `version.properties` | 版本号。发新版时把 `versionCode` 加 1、改 `versionName` |
-| `.github/workflows/build-apk.yml` | 推送到 main 分支后，GitHub 自动打包 APK 并发布到 Releases |
+| --- | --- |
+| `web/` | 网页版全部代码和数据（App 构建时会复制进 APK） |
+| `web/js/fsrs.js` | FSRS-5 调度 + 负载均衡 |
+| `web/js/planner.js` | 每日计划：时间预算、可持续新词速度、积压处理 |
+| `web/data/dict.json` | 由 ECDICT 生成的词典与词书标签（`tools/build_dict.py`） |
+| `web/data/content.json` | 手写的记忆法、例句、故事、文章 |
+| `app/` | 安卓外壳（WebView + 朗读、备份、提醒） |
+| `tools/simulate.mjs` | 180 天学习模拟，用来检验复习量是否可控 |
 
-## 学习进度保存在哪里
+## 发布新版本
 
-- 登录账号后，进度保存在云端（Supabase），多台设备自动合并同步：同一个词以最近一次复习为准。
+1. 改 `version.properties` 里的 `versionCode`（加 1）和 `versionName`，以及 `web/js/app.js` 的 `APP_VERSION`、`web/sw.js` 的缓存名。
+2. 推送到 `main`：GitHub Actions 自动打包签名 APK 发布到 Releases，同时更新网页版。
+3. App 会自动检查 Releases 上的新版本并提示更新。
 
-- App 内部存储（随 App 保留，覆盖安装新版不会丢）。
-- 每次答题后自动备份到手机的 `下载/拾词/拾词进度备份.json`（卸载 App 也不会删除）。
-- 换手机或重装：在 App「设置 → 从备份恢复」里选这个文件。
-- 电脑网页版的进度也能导出成 `.json`，在手机 App 里“从备份恢复”导入。
+签名密钥保存在仓库 Secrets（`SHICI_KEYSTORE_BASE64`、`SHICI_KEYSTORE_PASSWORD`），每次必须用同一个密钥，否则手机无法覆盖安装。
 
-## 签名密钥（重要）
+## 开源许可
 
-App 必须一直用**同一把签名密钥**打包，手机才能覆盖安装新版并保住进度。
-密钥保存在 GitHub 仓库的 Secrets（`SHICI_KEYSTORE_BASE64`、`SHICI_KEYSTORE_PASSWORD`）里，
-另有一份备份在作者电脑的「英语2/拾词App/signing」文件夹，**请勿删除、勿外传**。
+词典数据来自 [ECDICT](https://github.com/skywind3000/ECDICT)（MIT），见 `web/data/ECDICT-LICENSE.txt`。
