@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="shici-app" content="2.0.0">
+<title>拾词 · 科学背单词</title>
+<meta name="description" content="拾词：按你的时间安排复习，不欠单词债。中考、高考、四六级、考研、雅思、托福词书，记忆法、点读文章、多端同步。">
+<meta name="theme-color" content="#F3F5F9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F131D" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css">
+<script>
+  // 主题在样式加载前确定，避免闪烁
+  try { var t = (JSON.parse(localStorage.getItem('shici.v3') || '{}').settings || {}).theme; if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+</head>
+<body>
+  <main id="view" class="view"></main>
+  <nav id="bnav" class="bnav" aria-label="主导航"></nav>
+  <div id="backdrop" class="backdrop" hidden></div>
+  <section id="sheet" class="sheet" role="dialog" aria-modal="true" hidden></section>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <noscript><p style="padding:24px">拾词需要开启 JavaScript 才能使用。</p></noscript>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

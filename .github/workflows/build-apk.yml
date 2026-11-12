@@ -48,7 +48,6 @@ jobs:
         run: |
           mkdir -p out
           cp app/build/outputs/apk/release/app-release.apk "out/Shici-${{ steps.ver.outputs.name }}.apk"
-          cp app/src/main/assets/www/index.html "out/shici-content-${{ steps.ver.outputs.name }}.html"
 
       - uses: actions/upload-artifact@v4
         with:
@@ -65,4 +64,4 @@ jobs:
           body: |
             **手机安装**：下载 `Shici-${{ steps.ver.outputs.name }}.apk`，在手机上打开安装。已经装过旧版的直接覆盖安装，学习进度会保留。
 
-            `shici-content-${{ steps.ver.outputs.name }}.html` 是同一版本的网页文件，可以在电脑上用 Chrome 打开使用。
+            **网页版**：https://liugithub007.github.io/my-new-repo/ ，用同一个账号登录即可和手机同步。

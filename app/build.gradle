@@ -14,6 +14,16 @@ def ksPath = System.getenv('SHICI_KEYSTORE') ?: 'signing/shici-release.jks'
 def ksPass = System.getenv('SHICI_KEYSTORE_PASSWORD') ?: signingProps.getProperty('storePassword', '')
 def ksAlias = System.getenv('SHICI_KEY_ALIAS') ?: signingProps.getProperty('keyAlias', 'shici')
 
+// 网页内容在仓库的 web/ 目录，构建时复制进 APK 的 assets/www/
+def webAssets = layout.buildDirectory.dir('generated/webassets').get().asFile
+tasks.register('copyWeb', Copy) {
+    from(rootProject.file('web')) {
+        exclude 'package.json', 'sw.js'
+    }
+    into(new File(webAssets, 'www'))
+}
+preBuild.dependsOn 'copyWeb'
+
 android {
     namespace 'com.shici.app'
     compileSdk 34
@@ -39,6 +49,12 @@ android {
         release {
             minifyEnabled false
             signingConfig signingConfigs.release
+        }
+    }
+
+    sourceSets {
+        main {
+            assets.srcDirs += [webAssets]
         }
     }
 

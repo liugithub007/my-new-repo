@@ -6,6 +6,9 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.pm.PackageInfo;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -28,9 +31,7 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,18 +42,16 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * 拾词 App 外壳：用系统 WebView 运行内置的网页（assets/www/index.html）。
+ * 拾词 App 外壳：用系统 WebView 运行内置的网页（assets/www/，构建时从仓库的 web/ 目录复制）。
  * - 网页固定从 https://appassets.androidplatform.net/ 这个虚拟地址加载，
- *   所以学习进度（localStorage）在 App 升级、内容更新后都保持不变。
- * - 内容更新包会保存在 App 私有目录 files/www/，优先于内置版本加载。
- * - 通过 ShiciNative 给网页提供：系统朗读、把进度备份到“下载/拾词”、安装更新包、打开链接。
+ *   所以学习进度（localStorage）在 App 升级后保持不变，1.x 版本的进度也能自动迁移。
+ * - 通过 ShiciNative 给网页提供：系统朗读、把进度备份到“下载/拾词”、每日提醒、打开链接。
  */
 public class MainActivity extends Activity {
     private static final String HOST = "appassets.androidplatform.net";
     private static final String START_URL = "https://" + HOST + "/index.html";
     private static final int REQ_FILE = 1;
-    private static final int REQ_UPDATE = 2;
-    private static final String UPDATE_MARK = "name=\"shici-app\"";
+    private static final int REQ_NOTIFY = 3;
 
     private WebView web;
     private ValueCallback<Uri[]> fileCallback;
@@ -63,7 +62,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        styleSystemBars();
+        removeLegacyOverride();
+        styleSystemBars(isSystemDark());
 
         web = new WebView(this);
         setContentView(web);
@@ -103,8 +103,9 @@ public class MainActivity extends Activity {
                 Intent i = new Intent(Intent.ACTION_GET_CONTENT);
                 i.addCategory(Intent.CATEGORY_OPENABLE);
                 i.setType("*/*");
+                i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"application/json", "text/plain", "application/octet-stream"});
                 try {
-                    startActivityForResult(Intent.createChooser(i, "选择文件"), REQ_FILE);
+                    startActivityForResult(Intent.createChooser(i, "选择备份文件"), REQ_FILE);
                 } catch (ActivityNotFoundException e) {
                     fileCallback = null;
                     return false;
@@ -119,27 +120,45 @@ public class MainActivity extends Activity {
         else web.loadUrl(START_URL);
     }
 
-    private void styleSystemBars() {
-        Window w = getWindow();
-        w.setStatusBarColor(Color.parseColor("#F3F5F9"));
-        w.setNavigationBarColor(Color.parseColor("#F3F5F9"));
-        if (Build.VERSION.SDK_INT >= 23) {
-            int flags = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-            if (Build.VERSION.SDK_INT >= 26) flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-            w.getDecorView().setSystemUiVisibility(flags);
-        }
+    private boolean isSystemDark() {
+        return (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 
-    /** 加载网页文件：优先用已安装的更新包，否则用 App 自带的版本。 */
+    /** 状态栏、导航栏颜色跟随网页主题。 */
+    private void styleSystemBars(boolean dark) {
+        Window w = getWindow();
+        int color = Color.parseColor(dark ? "#0F131D" : "#F3F5F9");
+        w.setStatusBarColor(color);
+        w.setNavigationBarColor(color);
+        if (Build.VERSION.SDK_INT >= 23) {
+            int flags = 0;
+            if (!dark) {
+                flags = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                if (Build.VERSION.SDK_INT >= 26) flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+            }
+            w.getDecorView().setSystemUiVisibility(flags);
+        }
+        if (web != null) web.setBackgroundColor(color);
+    }
+
+    /** 1.x 版本支持手动安装网页更新包（files/www/），2.0 起网页随 App 一起更新，清掉旧的更新包。 */
+    private void removeLegacyOverride() {
+        File dir = new File(getFilesDir(), "www");
+        File[] fs = dir.listFiles();
+        if (fs != null) for (File f : fs) //noinspection ResultOfMethodCallIgnored
+            f.delete();
+        //noinspection ResultOfMethodCallIgnored
+        dir.delete();
+    }
+
+    /** 加载 App 自带的网页文件。 */
     private WebResourceResponse serve(String path) {
         if (path == null || path.equals("/") || path.isEmpty()) path = "/index.html";
         String name = path.substring(1);
         if (name.contains("..")) return notFound();
         InputStream in;
         try {
-            File updated = new File(getFilesDir(), "www/" + name);
-            if (updated.isFile()) in = new FileInputStream(updated);
-            else in = getAssets().open("www/" + name);
+            in = getAssets().open("www/" + name);
         } catch (IOException e) {
             return notFound();
         }
@@ -161,6 +180,8 @@ public class MainActivity extends Activity {
         if (n.endsWith(".json")) return "application/json";
         if (n.endsWith(".png")) return "image/png";
         if (n.endsWith(".svg")) return "image/svg+xml";
+        if (n.endsWith(".webmanifest")) return "application/manifest+json";
+        if (n.endsWith(".txt")) return "text/plain";
         return "application/octet-stream";
     }
 
@@ -215,37 +236,6 @@ public class MainActivity extends Activity {
         return f.getAbsolutePath();
     }
 
-    private void installUpdate(Uri uri) {
-        try (InputStream in = getContentResolver().openInputStream(uri)) {
-            if (in == null) throw new IOException("读不到文件");
-            ByteArrayOutputStream buf = new ByteArrayOutputStream();
-            byte[] b = new byte[64 * 1024];
-            int n;
-            while ((n = in.read(b)) > 0) {
-                buf.write(b, 0, n);
-                if (buf.size() > 30 * 1024 * 1024) throw new IOException("文件太大，不像是更新包");
-            }
-            String html = new String(buf.toByteArray(), StandardCharsets.UTF_8);
-            if (!html.contains(UPDATE_MARK)) {
-                Toast.makeText(this, "这不是拾词的更新包，请选择新版的「拾词背单词.html」", Toast.LENGTH_LONG).show();
-                return;
-            }
-            File dir = new File(getFilesDir(), "www");
-            if (!dir.isDirectory() && !dir.mkdirs()) throw new IOException("无法创建目录");
-            File tmp = new File(dir, "index.html.tmp");
-            try (FileOutputStream os = new FileOutputStream(tmp)) {
-                os.write(buf.toByteArray());
-            }
-            File dst = new File(dir, "index.html");
-            if (dst.exists() && !dst.delete()) throw new IOException("无法替换旧文件");
-            if (!tmp.renameTo(dst)) throw new IOException("无法保存更新包");
-            Toast.makeText(this, "更新包已安装，学习进度不变", Toast.LENGTH_LONG).show();
-            web.reload();
-        } catch (IOException | SecurityException e) {
-            Toast.makeText(this, "安装失败：" + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -253,8 +243,14 @@ public class MainActivity extends Activity {
         if (requestCode == REQ_FILE) {
             if (fileCallback != null) fileCallback.onReceiveValue(uri != null ? new Uri[]{uri} : null);
             fileCallback = null;
-        } else if (requestCode == REQ_UPDATE && uri != null) {
-            installUpdate(uri);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
+        super.onRequestPermissionsResult(requestCode, permissions, results);
+        if (requestCode == REQ_NOTIFY && (results.length == 0 || results[0] != PackageManager.PERMISSION_GRANTED)) {
+            Toast.makeText(this, "没有通知权限，提醒无法显示。可以在系统设置里给拾词打开通知。", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -304,8 +300,7 @@ public class MainActivity extends Activity {
                 code = pi.versionCode;
             } catch (Exception ignored) {
             }
-            boolean updated = new File(getFilesDir(), "www/index.html").isFile();
-            return name + "|" + code + "|" + (updated ? "updated" : "builtin");
+            return name + "|" + code;
         }
 
         @JavascriptInterface
@@ -333,31 +328,43 @@ public class MainActivity extends Activity {
             }
         }
 
+        /** 开关每日提醒。h:m 为本地时间。返回是否设置成功。 */
         @JavascriptInterface
-        public void pickUpdate() {
-            runOnUiThread(() -> {
-                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-                i.addCategory(Intent.CATEGORY_OPENABLE);
-                i.setType("*/*");
-                try {
-                    startActivityForResult(Intent.createChooser(i, "选择更新包"), REQ_UPDATE);
-                } catch (ActivityNotFoundException e) {
-                    Toast.makeText(MainActivity.this, "没有可用的文件管理器", Toast.LENGTH_SHORT).show();
+        public boolean setReminder(boolean on, int h, int m, String text) {
+            SharedPreferences p = Reminder.prefs(MainActivity.this);
+            SharedPreferences.Editor e = p.edit().putBoolean("on", on).putInt("h", Math.max(0, Math.min(23, h))).putInt("m", Math.max(0, Math.min(59, m)));
+            if (text != null && !text.isEmpty()) e.putString("text", text);
+            e.apply();
+            try {
+                if (on) {
+                    if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission("android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED) {
+                        runOnUiThread(() -> requestPermissions(new String[]{"android.permission.POST_NOTIFICATIONS"}, REQ_NOTIFY));
+                    }
+                    Reminder.schedule(MainActivity.this);
+                } else {
+                    Reminder.cancel(MainActivity.this);
                 }
-            });
+                return true;
+            } catch (Exception ex) {
+                return false;
+            }
+        }
+
+        /** 更新提醒里显示的“今天要复习多少”。 */
+        @JavascriptInterface
+        public void setReminderText(String text) {
+            if (text == null) return;
+            Reminder.prefs(MainActivity.this).edit().putString("text", text).putLong("textDay", System.currentTimeMillis()).apply();
         }
 
         @JavascriptInterface
-        public void resetWeb() {
-            runOnUiThread(() -> {
-                File f = new File(getFilesDir(), "www/index.html");
-                if (f.isFile() && !f.delete()) {
-                    Toast.makeText(MainActivity.this, "恢复失败", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                Toast.makeText(MainActivity.this, "已恢复 App 自带的内容，学习进度不变", Toast.LENGTH_LONG).show();
-                web.reload();
-            });
+        public void setDark(boolean dark) {
+            runOnUiThread(() -> styleSystemBars(dark));
+        }
+
+        @JavascriptInterface
+        public boolean systemDark() {
+            return isSystemDark();
         }
 
         @JavascriptInterface

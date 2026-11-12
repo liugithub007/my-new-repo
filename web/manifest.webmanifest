@@ -1,0 +1,16 @@
+{
+  "name": "拾词 · 科学背单词",
+  "short_name": "拾词",
+  "description": "按你的时间安排复习，不欠单词债。",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F3F5F9",
+  "theme_color": "#18213A",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
