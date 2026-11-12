@@ -190,8 +190,9 @@ body:is([data-view="session"],[data-view="placement"],[data-view="screen"]) .vie
 .spellres .y { color: var(--good); } .spellres .x { color: var(--again); text-decoration: underline; }
 
 /* 单词信息 */
-.whead { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-.hw { font: 600 34px/1.2 var(--font-head); letter-spacing: .005em; word-break: break-word; margin-right: 4px; }
+.whead { display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; }
+.whead > button, .whead > .chip { flex: none; }
+.hw { font: 600 34px/1.2 var(--font-head); letter-spacing: .005em; white-space: nowrap; margin-right: 4px; min-width: 0; }
 .hw.big { font-size: 44px; }
 .hw.sm { font-size: 24px; }
 .wsub { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 4px 0 12px; font-size: 14px; }

@@ -4,9 +4,9 @@ import { Planner, dayKey } from './planner.js';
 import * as dict from './dict.js';
 import { speak as nativeSpeak, NATIVE, saveFile } from './native.js';
 import { scheduleSync } from './sync.js';
-import { $ } from './util.js';
+import { $, fitWords } from './util.js';
 
-export const APP_VERSION = '2.1.0';
+export const APP_VERSION = '2.1.1';
 export const REPO = 'liugithub007/my-new-repo';
 export const RELEASES_URL = `https://github.com/${REPO}/releases/latest`;
 export const WEB_URL = 'https://liugithub007.github.io/my-new-repo/';
@@ -68,7 +68,7 @@ function render() {
   const el = $('#view');
   el.innerHTML = '';
   window.scrollTo(0, 0);
-  try { v.render(el, top.params || {}); }
+  try { const r = v.render(el, top.params || {}); fitWords(el); if (r && r.then) r.then(() => fitWords(el)).catch(() => {}); }
   catch (e) { console.error(e); el.innerHTML = `<div class="empty">页面出错了：${String(e.message || e)}</div>`; }
 }
 export function go(name, params = {}, opts = {}) {
@@ -96,7 +96,7 @@ window.addEventListener('popstate', () => { if (!closeSheet()) back(); });
 export function openSheet(html, onClick) {
   const sh = $('#sheet'), bd = $('#backdrop');
   sh.innerHTML = '<div class="grab" aria-hidden="true"></div>' + html;
-  sh.hidden = false; bd.hidden = false;
+  sh.hidden = false; bd.hidden = false; fitWords(sh);
   sh._onClick = onClick || null;
   requestAnimationFrame(() => { sh.classList.add('on'); bd.classList.add('on'); });
 }

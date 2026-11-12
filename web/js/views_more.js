@@ -109,7 +109,6 @@ register('plan', {
           ${seg('retention', [[0.85, '轻松 85%'], [0.9, '标准 90%'], [0.95, '冲刺 95%']], s.retention)}
           <p class="muted small">在这个目标下，一个新词第一年平均要复习约 ${k.toFixed(1)} 次。</p></div>
         <div class="card toggles">
-          <label class="tg"><span><b>拼写练习</b><small>学会的词再练一次拼写。复习量会增加约一倍</small></span><input type="checkbox" data-tg="spelling" ${s.spelling ? 'checked' : ''}></label>
           <label class="tg"><span><b>听音模式</b><small>复习时只放发音，不显示单词，练听力</small></span><input type="checkbox" data-tg="listenFront" ${s.listenFront ? 'checked' : ''}></label>
         </div>`;
     };

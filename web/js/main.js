@@ -5,7 +5,7 @@ import { initSync, syncNow, auth } from './sync.js';
 import { save } from './store.js';
 import { handleWordClicks } from './words.js';
 import { isApp } from './native.js';
-import { $, ICON } from './util.js';
+import { $, ICON, fitWords, debounce } from './util.js';
 import './study.js';
 import './views_read.js';
 import './views_exam.js';
@@ -62,6 +62,7 @@ function wireNav() {
     handleWordClicks(e);
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+  window.addEventListener('resize', debounce(() => fitWords(document), 150));
 }
 
 async function boot() {

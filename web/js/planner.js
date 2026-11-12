@@ -43,11 +43,11 @@ export class Planner {
   get S() { return this.state.settings; }
   timing() { return Object.assign({}, DEFAULT_TIMING, this.state.timing || {}); }
   todayLog(now) { const k = dayKey(now); const L = this.state.log; return L[k] || (L[k] = { rev: 0, ok: 0, rv: 0, nw: 0, ms: 0, extra: 0, words: [] }); }
-  kinds() { return this.S.spelling ? ['r', 's'] : ['r']; }
+  kinds() { return ['r']; }   // 不做拼写练习
 
   rebuildLoad() {
     const load = new Map();
-    for (const w in this.state.cards) for (const k of ['r', 's']) {
+    for (const w in this.state.cards) for (const k of this.kinds()) {
       const c = this.state.cards[w][k];
       if (c && c.st === 2) { const d = dayIdx(c.due); load.set(d, (load.get(d) || 0) + 1); }
     }
@@ -133,6 +133,7 @@ export class Planner {
       if (out.length >= n) break;
       if (this.state.cards[w] || this.state.known[w]) continue;
       const zh = this.env.zh(w);
+      if (!zh) continue;   // 词典里没有释义的词不出题
       if ([...recent, ...out.map(x => [x, this.env.zh(x)])].some(([o, oz]) => interferes(w, zh, o, oz))) { skipped.push(w); if (skipped.length > 60) break; continue; }
       out.push(w);
     }
@@ -157,7 +158,6 @@ export class Planner {
       if (k === 'r') { lg.nw++; (lg.words || (lg.words = [])).push(w); tm.nw = (tm.nw || DEFAULT_TIMING.nw) * 0.9 + clamp(sec * 2.5, 10, 120) * 0.1; }
       else lg.sp = (lg.sp || 0) + 1;
     } else if (card.st === 2) { lg.rv++; tm.rev = (tm.rev || DEFAULT_TIMING.rev) * 0.95 + sec * 0.05; }
-    if (k === 'r' && nc.st === 2 && S.spelling && !entry.s) entry.s = newCard();
     if (nc.lapses >= 8) entry.leech = 1;
     return { w, before, day: dayKey(now) };
   }

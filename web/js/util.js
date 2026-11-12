@@ -55,3 +55,23 @@ export const ICON = {
   undo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>',
   shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6z"/></svg>',
 };
+
+/** 单词标题保持一行：太长时按可用宽度缩小字号，不折成两行 */
+export function fitWords(root = document) {
+  root.querySelectorAll('.hw').forEach(el => {
+    if (!el.textContent.trim()) return;
+    el.style.fontSize = ''; el.style.whiteSpace = '';
+    const box = el.parentElement; if (!box || !box.clientWidth) return;
+    let others = 0;
+    if (box.classList.contains('whead')) for (const c of box.children) if (c !== el) others += c.offsetWidth + 6;
+    const cs = getComputedStyle(box);
+    const avail = box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - others - 4;
+    const need = el.scrollWidth;
+    if (need > avail && avail > 0) {
+      const base = parseFloat(getComputedStyle(el).fontSize);
+      const fs = Math.floor(base * avail / need);
+      el.style.fontSize = Math.max(18, fs) + 'px';
+      if (fs < 18) el.style.whiteSpace = 'normal';   // 特别长的词组才允许换行
+    }
+  });
+}

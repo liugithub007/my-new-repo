@@ -3,7 +3,7 @@ import * as dict from './dict.js';
 import { app, register, go, back, commit, speak, todayLog, refresh, resetPlannerIndex, RELEASES_URL } from './app.js';
 import { dayKey } from './planner.js';
 import { outcomes, DAY, retrievability } from './fsrs.js';
-import { esc, ICON, toast, fmtIvl, shuffle, $ } from './util.js';
+import { esc, ICON, toast, fmtIvl, shuffle, $, fitWords } from './util.js';
 import { wordInfoHTML, statusOf } from './words.js';
 import { auth, sync } from './sync.js';
 import { openUrl, setReminderText, isApp } from './native.js';
@@ -137,7 +137,7 @@ function headHTML(w, hide) {
   return `<div class="whead center"><span class="hw big">${hide ? '' : esc(e.w)}</span></div>
     <div class="wsub center">${!hide && e.ph ? `<span class="ipa">/${esc(e.ph)}/</span>` : ''}<button class="spk" data-say="${esc(e.w)}" aria-label="朗读">${ICON.speaker}</button></div>`;
 }
-function setCard(html, bar) { $('#scard').innerHTML = html; $('#actbar').innerHTML = bar; $('#scard').scrollTop = 0; }
+function setCard(html, bar) { $('#scard').innerHTML = html; $('#actbar').innerHTML = bar; $('#scard').scrollTop = 0; fitWords($('#scard')); }
 function chips(it) {
   const st = it.c ? it.c.st : 0, e = app.state.cards[it.w];
   return `<div class="kind">${it.isNew ? '<span class="chip new">新词</span>' : st === 1 || st === 3 ? `<span class="chip learn">${st === 3 ? '重学' : '学习中'}</span>` : '<span class="chip">复习</span>'}${it.k === 's' ? '<span class="chip">拼写</span>' : ''}${e && e.leech ? '<span class="chip leech">顽固词</span>' : ''}</div>`;
@@ -330,6 +330,7 @@ register('placement', {
         <div class="ptest"><p class="muted center">词汇量测试 · 一眼能说出中文意思的才算认识<br>里面混了几个编造的词</p>
         <div class="hw big center">${esc(qs[i].w)}</div></div>
         <div class="actbar"><div class="two"><button class="btn big" data-y="0">不认识</button><button class="btn big primary" data-y="1">认识</button></div></div>`;
+      fitWords(el);
     };
     const result = () => {
       const known = Array(DEC).fill(0), tot = Array(DEC).fill(0); let fake = 0;
@@ -381,6 +382,7 @@ register('screen', {
         <div class="hw big center">${esc(e.w)}</div><div class="center"><button class="spk" data-say="${esc(e.w)}">${ICON.speaker}</button></div>
         <details class="peek"><summary>看一下释义</summary><div class="mean">${esc(e.zh).replace(/\n/g, '<br>')}</div></details></div>
         <div class="actbar"><div class="two"><button class="btn big" data-y="0">不认识，要学</button><button class="btn big primary" data-y="1">认识</button></div></div>`;
+      fitWords(el);
     };
     draw();
     el.onclick = e => {

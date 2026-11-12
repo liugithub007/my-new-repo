@@ -29,6 +29,7 @@ export function normalize(s) {
   const f = freshState();
   for (const k of Object.keys(f)) if (s[k] === undefined) s[k] = f[k];
   s.settings = Object.assign({}, DEFAULT_SETTINGS, s.settings || {});
+  s.settings.spelling = false;
   s.settings.reminder = Object.assign({}, DEFAULT_SETTINGS.reminder, s.settings.reminder || {});
   if (!Array.isArray(s.mine)) s.mine = [];
   for (const w of Object.keys(s.cards)) { const e = s.cards[w]; if (!e || !e.r || typeof e.r.due !== 'number') delete s.cards[w]; }
@@ -44,7 +45,6 @@ export function migrate(old) {
   s.settings.book = 'cet6';
   if (old.settings) {
     s.settings.retention = old.settings.retention || 0.9;
-    s.settings.spelling = !!old.settings.spelling;
     s.settings.autoSpeak = old.settings.autoSpeak !== false;
     s.settings.accent = old.settings.accent || 'en-US';
     s.settings.rate = old.settings.rate || 0.95;
