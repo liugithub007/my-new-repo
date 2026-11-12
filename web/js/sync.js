@@ -103,6 +103,9 @@ export function merge(local, remote) {
     }
   }
   for (const [k, v] of Object.entries(remote.read || {})) if (v && !local.read[k]) { local.read[k] = v; changed = true; }
+  for (const [k, v] of Object.entries(remote.papers || {})) { const l = local.papers[k]; if (v && (!l || (v.del && !l.del && (v.at || 0) >= (l.at || 0)))) { local.papers[k] = v; changed = true; } }
+  for (const [k, v] of Object.entries(remote.examDone || {})) if (v && (!local.examDone[k] || (v.at || 0) > (local.examDone[k].at || 0))) { local.examDone[k] = v; changed = true; }
+  if ((remote.vocabEst || 0) && (!local.vocabEst || newer)) { if (local.vocabEst !== remote.vocabEst) changed = true; local.vocabEst = remote.vocabEst; }
   const fresh = remote.onboarded && !local.onboarded;
   if (fresh) { local.onboarded = true; changed = true; }
   if ((newer || fresh) && remote.settings) { local.settings = Object.assign({}, local.settings, remote.settings); changed = true; }

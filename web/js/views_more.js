@@ -18,9 +18,9 @@ register('more', {
     el.innerHTML = `<h1 class="ptitle">设置</h1>
       <div class="menu">
         ${item('account', 'user', '账号与同步', auth ? `已登录：${esc(auth.username)}${sync.last ? ' · 上次同步 ' + hhmm(sync.last) : ''}` : '登录后，手机和电脑同步学习进度')}
-        ${item('pickbook', 'book', '词书', b.full)}
+        ${item('pickbook', 'book', '学习目标', b.full)}
+        ${item('placement', 'chart', '词汇量测试', app.state.vocabEst ? '上次测试约 ' + app.state.vocabEst + ' 词' : '测一测，认识的词直接跳过')}
         ${item('plan', 'clock', '学习计划', `每天 ${s.minutes} 分钟 · 新词${s.newMode === 'auto' ? '自动' : '每天 ' + s.newPerDay + ' 个'}`)}
-        ${item('stats', 'chart', '学习统计', '复习预测、学习日历、词书进度')}
         ${item('mine', 'star', '我的单词', '生词本、顽固词、标记认识的词')}
       </div>
       <div class="menu">
@@ -109,7 +109,6 @@ register('plan', {
           ${seg('retention', [[0.85, '轻松 85%'], [0.9, '标准 90%'], [0.95, '冲刺 95%']], s.retention)}
           <p class="muted small">在这个目标下，一个新词第一年平均要复习约 ${k.toFixed(1)} 次。</p></div>
         <div class="card toggles">
-          <label class="tg"><span><b>新词先问“认识吗”</b><small>认识的词一键跳过，不浪费时间</small></span><input type="checkbox" data-tg="askKnown" ${s.askKnown ? 'checked' : ''}></label>
           <label class="tg"><span><b>拼写练习</b><small>学会的词再练一次拼写。复习量会增加约一倍</small></span><input type="checkbox" data-tg="spelling" ${s.spelling ? 'checked' : ''}></label>
           <label class="tg"><span><b>听音模式</b><small>复习时只放发音，不显示单词，练听力</small></span><input type="checkbox" data-tg="listenFront" ${s.listenFront ? 'checked' : ''}></label>
         </div>`;
@@ -187,40 +186,6 @@ register('reminder', {
       toast(r.on ? (ok ? `已设置每天 ${el.querySelector('#rt').value} 提醒` : '设置失败，请检查通知权限') : '已关闭提醒');
     };
     el.onchange = apply;
-    el.onclick = e => { if (e.target.closest('[data-back]')) back(); };
-  },
-});
-
-// ---------------- 统计 ----------------
-register('stats', {
-  tab: 'more',
-  render(el) {
-    const s = app.state, now = Date.now(), L = s.log;
-    let streak = 0; { let t = now; if (!(L[dayKey(t)] || {}).rev) t -= DAY; while ((L[dayKey(t)] || {}).rev) { streak++; t -= DAY; } }
-    let rv = 0, ok = 0, mins = 0, days = 0;
-    for (let i = 0; i < 30; i++) { const l = L[dayKey(now - i * DAY)]; if (l && l.rev) { rv += l.rev; ok += l.ok; mins += (l.ms || 0) / 60000; days++; } }
-    let mastered = 0, learning = 0;
-    for (const w in s.cards) { const c = s.cards[w].r; if (c.st === 2 && c.s >= 21) mastered++; else learning++; }
-    const known = Object.keys(s.known).length;
-    const fc = app.planner.forecast(now, 30), cap = app.planner.capacity(), maxv = Math.max(cap, ...fc, 1);
-    const weeks = 15, start = now - (weeks * 7 - 1) * DAY;
-    const cells = []; for (let i = 0; i < weeks * 7; i++) { const l = L[dayKey(start + i * DAY)]; cells.push(l ? l.rev || 0 : 0); }
-    const lvl = n => n === 0 ? 0 : n < 20 ? 1 : n < 50 ? 2 : n < 100 ? 3 : 4;
-    el.innerHTML = `${sub('学习统计')}
-      <div class="tiles">
-        <div class="tile"><span>连续学习</span><b>${streak}<small> 天</small></b></div>
-        <div class="tile"><span>词汇量</span><b>${mastered + learning + known}<small> 词</small></b></div>
-        <div class="tile"><span>已掌握</span><b>${mastered}<small> 词</small></b></div>
-        <div class="tile"><span>30 天正确率</span><b>${rv ? Math.round(ok / rv * 100) : '–'}<small>${rv ? '%' : ''}</small></b></div>
-      </div>
-      <div class="card"><div class="row between"><b>未来 30 天的复习量</b><span class="muted small">虚线：每天 ${s.settings.minutes} 分钟能完成 ${cap} 张</span></div>
-        <div class="fc wide">${fc.map((n, i) => `<div class="fcb${n > cap ? ' over' : ''}"><span class="tr"><i style="height:${n / maxv * 100}%"></i></span><span class="d">${i % 5 === 0 ? (i === 0 ? '今天' : i + '天') : ''}</span></div>`).join('')}
-        <div class="capline" style="bottom:calc(${cap / maxv} * (100% - 18px) + 18px)"></div></div></div>
-      <div class="card"><b>学习日历</b><span class="muted small">　最近 ${weeks} 周 · 近 30 天学了 ${days} 天，共 ${Math.round(mins)} 分钟</span>
-        <div class="heat">${cells.map(n => `<i class="h${lvl(n)}" title="${n}"></i>`).join('')}</div></div>
-      <div class="card"><b>词书进度</b>${dict.BOOKS.map(b => { const bw = dict.bookWords(b.id); let l = 0, k = 0; for (const w of bw.byRank) { if (s.cards[w]) l++; else if (s.known[w]) k++; }
-        return `<div class="bprow"><span>${esc(b.full)}</span><span class="pbar sm"><i class="k" style="width:${k / bw.total * 100}%"></i><i class="l" style="width:${l / bw.total * 100}%"></i></span><span class="muted small">${Math.round((l + k) / bw.total * 100)}%</span></div>`; }).join('')}
-        <div class="legend"><span><i class="l"></i>已学</span><span><i class="k"></i>认识</span></div></div>`;
     el.onclick = e => { if (e.target.closest('[data-back]')) back(); };
   },
 });

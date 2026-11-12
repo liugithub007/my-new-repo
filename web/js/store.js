@@ -19,7 +19,7 @@ export const DEFAULT_SETTINGS = {
 export function freshState() {
   return { v: 3, created: Date.now(), updatedAt: 0, onboarded: false,
     settings: Object.assign({}, DEFAULT_SETTINGS), cards: {}, known: {}, mine: [], notes: {},
-    log: {}, timing: {}, read: {}, lastExport: 0 };
+    log: {}, timing: {}, read: {}, papers: {}, examDone: {}, vocabEst: 0, lastExport: 0 };
 }
 
 export function normalize(s) {

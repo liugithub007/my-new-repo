@@ -4,7 +4,7 @@ import { app, register, go, back, commit, speak } from './app.js';
 import { esc, ICON, debounce, fmtIvl } from './util.js';
 import { readerHTML, openWord, statusOf } from './words.js';
 
-function splitEn(s) { return s.replace(/\b(Mr|Mrs|Dr|Prof)\./g, '$1§').split(/(?<=[.!?]["”]?)\s+(?=["“A-Z])/).map(x => x.replace(/§/g, '.')); }
+export function splitEn(s) { return s.replace(/\b(Mr|Mrs|Dr|Prof)\./g, '$1§').split(/(?<=[.!?]["”]?)\s+(?=["“A-Z])/).map(x => x.replace(/§/g, '.')); }
 function splitZh(s) { return String(s || '').split(/(?<=[。！？][”"]?)/).filter(x => x.trim()); }
 function storyPairs(st) { const en = splitEn(st.story), zh = splitZh(st.storyZh); return en.map((x, i) => [x, en.length === zh.length ? zh[i] : '']); }
 function learnedCount(words) { return words.filter(w => app.state.cards[w] || app.state.known[w]).length; }

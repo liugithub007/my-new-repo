@@ -6,7 +6,7 @@ import { speak as nativeSpeak, NATIVE, saveFile } from './native.js';
 import { scheduleSync } from './sync.js';
 import { $ } from './util.js';
 
-export const APP_VERSION = '2.0.0';
+export const APP_VERSION = '2.1.0';
 export const REPO = 'liugithub007/my-new-repo';
 export const RELEASES_URL = `https://github.com/${REPO}/releases/latest`;
 export const WEB_URL = 'https://liugithub007.github.io/my-new-repo/';
@@ -55,7 +55,7 @@ export const speak = (t, rate) => nativeSpeak(t, app.state.settings, rate);
 export const todayLog = () => app.planner.todayLog(Date.now());
 
 // ---------- 页面切换 ----------
-const TABS = { home: 'home', read: 'read', more: 'more' };
+const TABS = { home: 'home', read: 'read', exam: 'exam', progress: 'progress', more: 'more' };
 export function register(name, view) { app.views[name] = view; }
 function render() {
   const top = app.stack[app.stack.length - 1];

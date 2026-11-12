@@ -59,9 +59,16 @@ export function bookWords(bookId) {
   const isBasic = a => baseBit && ((a[4] & baseBit) || a[3] <= 1500);
   const fresh = all.filter(a => !isBasic(a)).map(a => a[0]);
   const basic = all.filter(isBasic).map(a => a[0]);
-  const out = { order: fresh.concat(basic), byRank: all.map(a => a[0]), freshCount: fresh.length, total: all.length };
+  const out = { order: all.map(a => a[0]), byRank: all.map(a => a[0]), freshCount: fresh.length, total: all.length };
   bookCache.set(bookId, out);
   return out;
+}
+
+/** 全部考试词汇按词频排序（词汇量测试用） */
+let examCache = null;
+export function examWordsByRank() {
+  if (!examCache) examCache = D.words.filter(a => a[4] && /^[a-z]/.test(a[0])).map(a => a[0]);
+  return examCache;
 }
 
 const SUF_RULES = [['ies', 'y'], ['ied', 'y'], ['ier', 'y'], ['iest', 'y'], ['es', ''], ['s', ''], ['ed', ''], ['ed', 'e'], ['d', ''], ['ing', ''], ['ing', 'e'], ['er', ''], ['est', ''], ['ly', ''], ["'s", ''], ["'", '']];

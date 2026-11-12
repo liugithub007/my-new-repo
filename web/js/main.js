@@ -8,6 +8,8 @@ import { isApp } from './native.js';
 import { $, ICON } from './util.js';
 import './study.js';
 import './views_read.js';
+import './views_exam.js';
+import './views_progress.js';
 import { applyTheme } from './views_more.js';
 
 function cmpVer(a, b) {
@@ -46,7 +48,7 @@ window.__shiciBack = function () {
 
 function wireNav() {
   const nav = $('#bnav');
-  nav.innerHTML = [['home', 'words', '单词'], ['read', 'read', '推文'], ['more', 'gear', '设置']]
+  nav.innerHTML = [['home', 'words', '单词'], ['read', 'read', '推文'], ['exam', 'paper', '真题'], ['progress', 'chart', '进度'], ['more', 'gear', '设置']]
     .map(([t, i, n]) => `<button data-tab="${t}">${ICON[i]}<span>${n}</span></button>`).join('');
   nav.addEventListener('click', e => {
     const b = e.target.closest('[data-tab]'); if (!b) return;

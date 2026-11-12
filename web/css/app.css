@@ -342,3 +342,49 @@ input.search { margin: 8px 0 12px; }
 .btn { white-space: nowrap; }
 .three .btn { padding: 8px 6px; }
 @media (max-width: 480px) { .three kbd, .grades kbd { display: none; } }
+
+/* 2.1：新词三选项、进度、真题 */
+.stack3 { display: grid; gap: 8px; }
+.stack3 .btn.big { min-height: 50px; }
+.bnav button { font-size: 11px; }
+.goalline { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; width: 100%; padding: 12px 14px; margin: 12px 0; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); font-size: 14px; text-align: left; }
+.goalline .pbar { margin: 0; }
+.goal { display: flex; gap: 18px; align-items: center; cursor: pointer; }
+.ring { position: relative; width: 120px; height: 120px; flex: none; }
+.ring svg { width: 120px; height: 120px; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 12; stroke-linecap: round; }
+.ring .rbg { stroke: var(--sunk); }
+.ring .rk { stroke: color-mix(in srgb, var(--accent) 35%, var(--sunk)); }
+.ring .rl { stroke: var(--accent); }
+.rtx { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; }
+.rtx b { font: 600 30px var(--font-head); }
+.rtx b small { font-size: 15px; }
+.rtx span { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.gside { flex: 1; min-width: 0; }
+.gnum { display: grid; grid-template-columns: auto 1fr auto 1fr; gap: 2px 8px; margin: 8px 0 0; font-size: 14px; }
+.gnum dt { color: var(--muted); } .gnum dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+.bprow.cur span:first-child { font-weight: 600; color: var(--accent); }
+.bignum { font: 600 64px/1.1 var(--font-head); text-align: center; color: var(--accent); margin: 4px 0; }
+.chips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 8px; margin: 0 -16px; padding-left: 16px; padding-right: 16px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chips button { flex: none; height: 34px; padding: 0 14px; border-radius: 17px; border: 1px solid var(--line); background: var(--surface); font-size: 14px; }
+.chips button.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.post.exam, .post.imp { display: flex; flex-direction: column; gap: 2px; width: 100%; text-align: left; font: inherit; color: inherit; }
+.post.imp { border-style: dashed; box-shadow: none; }
+.post.imp b { color: var(--accent); }
+.form textarea { display: block; width: 100%; margin-top: 4px; padding: 12px 14px; font: 16px/1.6 var(--font-head); border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--paper); color: var(--ink); resize: vertical; }
+.form textarea:focus { outline: 0; border-color: var(--accent); }
+.q .qq { margin: 0 0 10px; font-size: 16px; line-height: 1.6; }
+.opt { display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left; padding: 10px 12px; margin: 6px 0; border-radius: var(--r-sm); border: 1.5px solid var(--line); background: var(--surface); font-size: 15px; line-height: 1.5; }
+.opt .ol { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--sunk); font-weight: 600; font-size: 13px; }
+.opt.on { border-color: var(--accent); background: var(--accent-soft); }
+.opt.on .ol { background: var(--accent); color: var(--accent-ink); }
+.opt.ok { border-color: var(--good); background: color-mix(in srgb, var(--good) 12%, var(--surface)); }
+.opt.ok .ol { background: var(--good); color: #fff; }
+.opt.bad { border-color: var(--again); background: color-mix(in srgb, var(--again) 10%, var(--surface)); }
+.opt.bad .ol { background: var(--again); color: #fff; }
+.qs.done .opt { pointer-events: none; }
+.why { margin-top: 10px; padding: 10px 12px; border-radius: var(--r-sm); background: var(--sunk); font-size: 14px; line-height: 1.6; }
+.q.right .why b { color: var(--good); } .q.wrong .why b { color: var(--again); }
+.stickgo { position: sticky; bottom: 0; padding: 10px 0 calc(12px + var(--safe-b)); background: linear-gradient(to bottom, transparent, var(--paper) 14px); margin-top: 8px; }
+.goalline > span:first-child { white-space: nowrap; }

@@ -1,8 +1,8 @@
 // 离线缓存：页面和词典先用缓存打开，后台更新
-const CACHE = 'shici-2.0.0';
+const CACHE = 'shici-2.1.0';
 const CORE = ['./', 'index.html', 'css/app.css', 'manifest.webmanifest', 'icons/icon-192.png',
   'js/main.js', 'js/app.js', 'js/store.js', 'js/planner.js', 'js/fsrs.js', 'js/dict.js', 'js/words.js', 'js/study.js',
-  'js/views_read.js', 'js/views_more.js', 'js/sync.js', 'js/native.js', 'js/util.js', 'data/dict.json', 'data/content.json'];
+  'js/views_read.js', 'js/views_more.js', 'js/views_exam.js', 'js/views_progress.js', 'js/sync.js', 'js/native.js', 'js/util.js', 'data/dict.json', 'data/content.json', 'data/exams.json'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
